@@ -105,7 +105,7 @@ typedef struct Histogram {
     double total_v;
 } Histogram;
 
-#define MAX_NHIST 128
+#define MAX_NHIST 16
 
 Histogram hist[MAX_NHIST];
 
