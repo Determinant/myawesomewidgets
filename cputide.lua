@@ -8,15 +8,18 @@ local mygraph = require(rootmod .. "mygraph")
 
 local cputide = { mt = {} }
 
-local cpu_icon = wibox.widget {
-    {
-        markup = '&#xe026;',
-        widget = wibox.widget.textbox,
-        font = 'pixel 8'
-    },
-    top = 2,
-    layout = wibox.container.margin
-}
+local function actual_px(px) return (beautiful.get().scale_factor or 1) * px end
+local function gen_cpu_icon(theme)
+    return wibox.widget {
+        {
+            markup = '&#xe026;',
+            widget = wibox.widget.textbox,
+            font = theme.minor_font or 'pixel 8'
+        },
+        top = actual_px(theme.siji_icon_padding or 2),
+        layout = wibox.container.margin
+    }
+end
 
 function try_thermal()
     local wargs = {
@@ -45,7 +48,7 @@ end
 function cputide.new(args)
     args = args or {}
     local theme = beautiful.get()
-    local cpu_icon = args.cpu_icon or cpu_icon
+    local cpu_icon = args.cpu_icon or gen_cpu_icon(theme)
     local show_icon = (args.show_icon == nil and true) or args.show_icon
 
     local _cpu_widget_text = wibox.widget {
@@ -61,8 +64,8 @@ function cputide.new(args)
 
     local cpu_widget = wibox.widget {
         {
-            height = theme.cputide_height or args.height or 26,
-            width = theme.cputide_width or args.width or 50,
+            height = actual_px(theme.cputide_height or args.height or 26),
+            width = actual_px(theme.cputide_width or args.width or 50),
             background_color = theme.cputide_bg_color or args.bg_color or "#494b4f",
             base_color = theme.cputide_low_color or args.low_color or "#fabd2f",
             blend_color = theme.cputide_high_color or args.high_color or "#ff0000",

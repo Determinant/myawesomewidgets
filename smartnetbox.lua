@@ -9,16 +9,18 @@ local smartnetbox = { mt = {} }
 
 local default_color1 = "#d79921"
 local default_color2 = "#fe8019"
-function network_gen_icon(char, color, left, right)
+local function actual_px(px) return (beautiful.get().scale_factor or 1) * px end
+
+function network_gen_icon(char, color, left, right, theme)
     return wibox.widget {
         {
             markup = string.format('<span color="%s">%s</span>', color, char),
             widget = wibox.widget.textbox,
-            font = 'pixel 8'
+            font = theme.minor_font or 'pixel 8'
         },
         left = left,
         right = right,
-        top = 2,
+        top = actual_px(theme.siji_icon_padding or 2),
         layout = wibox.container.margin
     }
 end
@@ -65,10 +67,10 @@ function smartnetbox.new(args)
     local theme = beautiful.get()
     local color1 = theme.smartnetbox_color1 or args.color1 or default_color1
     local color2 = theme.smartnetbox_color2 or args.color2 or default_color2
-    local upload_icon = args.upload_icon or network_gen_icon("&#xe064;", color1, 5, 0)
-    local download_icon = args.download_icon or network_gen_icon("&#xe067;", color2, 0, 5)
+    local upload_icon = args.upload_icon or network_gen_icon("&#xe064;", color1, 5, 0, theme)
+    local download_icon = args.download_icon or network_gen_icon("&#xe067;", color2, 0, 5, theme)
     local show_icon = (args.show_icon == nil and true) or args.show_icon
-    local devs = args.devs or {"enp4s0", "enp0s31f6", "ens33"}
+    local devs = args.devs or {"wlp5s0", "enp4s0", "enp0s31f6", "ens33"}
     local net_dev = try_wired_network(devs)
     local network_wired_widget = wibox.widget.textbox()
     vicious.register(

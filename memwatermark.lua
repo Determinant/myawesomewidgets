@@ -7,20 +7,23 @@ local vhelpers = require("vicious.helpers")
 
 local memwatermark = { mt = {} }
 
-local mem_icon = wibox.widget {
-    {
-        markup = '&#xe021;',
-        widget = wibox.widget.textbox,
-        font = 'pixel 8'
-    },
-    top = 2,
-    layout = wibox.container.margin
-}
+local function actual_px(px) return (beautiful.get().scale_factor or 1) * px end
+local function gen_mem_icon(theme)
+    return wibox.widget {
+        {
+            markup = '&#xe021;',
+            widget = wibox.widget.textbox,
+            font = theme.minor_font or 'pixel 8'
+        },
+        top = actual_px(theme.siji_icon_padding or 2),
+        layout = wibox.container.margin
+    }
+end
 
 function memwatermark.new(args)
     args = args or {}
     local theme = beautiful.get()
-    local mem_icon = args.mem_icon or mem_icon
+    local mem_icon = args.mem_icon or gen_mem_icon(theme)
     local show_icon = (args.show_icon == nil and true) or args.show_icon
 
     local _mem_widget_text = wibox.widget {
@@ -52,8 +55,8 @@ function memwatermark.new(args)
                 background_color = theme.memwatermark_bg_color or args.bg_color or "#494b4f",
                 widget = wibox.widget.progressbar,
             },
-            forced_height = theme.memwatermark_height or args.width or 26,
-            forced_width = theme.memwatermark_width or args.width or 40,
+            forced_height = actual_px(theme.memwatermark_height or args.width or 26),
+            forced_width = actual_px(theme.memwatermark_width or args.width or 40),
             direction = 'east',
             layout = wibox.container.rotate
         },

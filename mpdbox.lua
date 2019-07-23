@@ -8,6 +8,8 @@ local mpc = require(rootmod .. "mpc")
 
 local mpdbox = { mt = {} }
 
+local function actual_px(px) return (beautiful.get().scale_factor or 1) * px end
+
 function shorten_str(s, len)
     if string.len(s) > len then
         s = string.sub(s, 0, len - 1) .. ".."
@@ -20,14 +22,14 @@ function html_escape(s)
     return string.gsub(s, '>', '&gt;')
 end
 
-function gen_icon(char, color)
+function gen_icon(char, color, theme)
     return wibox.widget {
         {
             markup = string.format('<span color="%s">%s</span>', color, char),
             widget = wibox.widget.textbox,
-            font = 'pixel 8'
+            font = theme.minor_font or 'pixel 8'
         },
-        top = 2,
+        top = actual_px(theme.siji_icon_padding or 2),
         layout = wibox.container.margin
     }
 end
@@ -40,16 +42,16 @@ function mpdbox.new(args)
     local color1 = theme.mpdbox_color1 or args.color1 or "#d79921"
     local color2 = theme.mpdbox_color2 or args.color2 or "#fe8019"
 
-    local music_icon = args.music_icon or gen_icon("&#xe05c;", color2)
-    local pause_icon = args.pause_icon or gen_icon("&#xe059;", color2)
+    local music_icon = args.music_icon or gen_icon("&#xe05c;", color2, theme)
+    local pause_icon = args.pause_icon or gen_icon("&#xe059;", color2, theme)
     local show_brackets = (args.show_brackets == nil and true) or args.show_brackets
     local show_music_icon = (args.show_music_icon == nil and true) or args.show_music_icon
     local mpc_conn
     local mpdbox_progress = wibox.widget {
-        width = theme.mpdbox_width or args.width or 100,
+        width = actual_px(theme.mpdbox_width or args.width or 100),
         max_value = 1,
         value = 0,
-        paddings = { top = 3, bottom = 3 },
+        paddings = { top = actual_px(3), bottom = actual_px(3) },
         border_width = 0,
         color = theme.mpdbox_bg_progress or args.bg_progress or {
             type = "linear",
@@ -88,7 +90,7 @@ function mpdbox.new(args)
         right = (show_brackets and 2) or 0,
         {
             layout = wibox.container.scroll.horizontal,
-            max_size = 100,
+            max_size = actual_px(100),
             step_function = wibox.container.scroll.step_functions
                                 .linear_increase,
             speed = 8,
