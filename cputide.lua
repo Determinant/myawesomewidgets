@@ -26,7 +26,8 @@ function try_thermal()
                     {"coretemp.0/hwmon/hwmon1/", "core"},
                     {"coretemp.0/hwmon/hwmon2/", "core"},
                     {"coretemp.0/hwmon/hwmon3/", "core"},
-                    {"coretemp.0/hwmon/hwmon4/", "core"}
+                    {"coretemp.0/hwmon/hwmon4/", "core"},
+                    {"hwmon0/", "hwmon"}
                 }
     local zone = { -- Known temperature data sources
         ["sys"]  = {"/sys/class/thermal/",     file = "temp",       div = 1000},
