@@ -70,7 +70,7 @@ function smartnetbox.new(args)
     local upload_icon = args.upload_icon or network_gen_icon("&#xe064;", color1, 5, 0, theme)
     local download_icon = args.download_icon or network_gen_icon("&#xe067;", color2, 0, 5, theme)
     local show_icon = (args.show_icon == nil and true) or args.show_icon
-    local devs = args.devs or {"wlp5s0", "enp4s0", "enp0s31f6", "ens33"}
+    local devs = args.devs or {"wlp5s0", "wlp3s0", "enp4s0", "enp0s31f6", "ens33"}
     local net_dev = try_wired_network(devs)
     local network_wired_widget = wibox.widget.textbox()
     vicious.register(
