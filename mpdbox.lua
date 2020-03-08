@@ -18,7 +18,9 @@ function shorten_str(s, len)
 end
 
 function html_escape(s)
+    if s == nil then return s end
     s = string.gsub(s, '<', '&lt;')
+    s = string.gsub(s, '&', '&amp;')
     return string.gsub(s, '>', '&gt;')
 end
 
