@@ -83,7 +83,7 @@ function mpdbox.new(args)
     local function mpc_error_handler(err)
         mpdbox_text:set_markup(
             string.format("err: %s <span font_weight=\"bold\">|</span> ", tostring(err)))
-        mpc_timeout_poller:start()
+        mpc_timeout_poller:again()
     end
 
     local mpdbox_scroll = wibox.widget {
@@ -134,6 +134,9 @@ function mpdbox.new(args)
         timeout = 1,
         autostart = true,
         callback = function ()
+            if mpc_conn == nil then
+                return
+            end
             mpc_conn:send("status", function(_, result)
                 _mpdbox._mpc_duration,
                 _mpdbox._mpc_elapsed =
