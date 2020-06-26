@@ -4,6 +4,7 @@ local beautiful = require("beautiful")
 local vicious = require("vicious")
 local vhelpers = require("vicious.helpers")
 local rootmod = (...):match("(.-)[^%.]+$")
+local linegraph = require(rootmod .. "linegraph")
 local mygraph = require(rootmod .. "mygraph")
 
 local cputide = { mt = {} }
@@ -63,6 +64,14 @@ function cputide.new(args)
         _cpu_widget_text
     }
 
+    local cpu_freq = wibox.widget {
+        background_color = "#00000000",
+        color = theme.cputide_power_color or args.cpu_low_color or "#75fb98",
+        max_value = 50,
+        line_width = 1,
+        widget = linegraph
+    }
+
     local cpu_widget = wibox.widget {
         {
             height = actual_px(theme.cputide_height or args.height or 26),
@@ -71,6 +80,12 @@ function cputide.new(args)
             base_color = theme.cputide_low_color or args.low_color or "#fabd2f",
             blend_color = theme.cputide_high_color or args.high_color or "#ff0000",
             widget = mygraph
+        },
+        {
+            nil,
+            cpu_freq,
+            expand = 'outside',
+            layout = wibox.layout.align.horizontal
         },
         {
             nil,
@@ -87,6 +102,7 @@ function cputide.new(args)
                     5,
                     try_thermal())
     vicious.register(cpu_widget.children[1], vicious.widgets.cpu, "$1")
+    vicious.register(cpu_freq, vicious.widgets.cpufreq, "$1", 2, "cpu0")
     return cpu_widget
 end
 

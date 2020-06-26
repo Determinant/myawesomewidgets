@@ -25,11 +25,12 @@ local gpu_usage  = {}
 -- {{{ GPU widget type
 local function worker(format)
     -- Get GPU stats
-    local f = io.popen("nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,power.draw,power.limit --format=csv")
+    local f = io.popen("nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,power.draw,power.limit,clocks.sm --format=csv")
     for line in f:lines() do
-        util, temp, watt_draw, watt_limit = string.match(line, "([0-9]*) %%, ([0-9]*), ([0-9.]*) W, ([0-9.]*) W$")
+        util, temp, watt_draw, watt_limit, sm_freq =
+            string.match(line, "([0-9]*) %%, ([0-9]*), ([0-9.]*) W, ([0-9.]*) W, ([0-9]*) MHz$")
         if util ~= nil then
-            gpu_usage = {util, temp, watt_draw / watt_limit * 100, watt_draw, watt_limit}
+            gpu_usage = {util, temp, watt_draw, watt_limit, sm_freq}
             for i = 1, #gpu_usage do
                 gpu_usage[i] = tonumber(gpu_usage[i])
             end
