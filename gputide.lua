@@ -48,7 +48,7 @@ function gputide.new(args)
 
     local gpu_freq = wibox.widget {
         background_color = "#00000000",
-        color = theme.gputide_power_color or args.gpu_low_color or "#75fb98",
+        color = theme.gputide_power_color or args.gpu_low_color or "#4b975f",
         line_width = 1,
         widget = linegraph
     }

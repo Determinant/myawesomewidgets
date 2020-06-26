@@ -4,6 +4,8 @@ local gears = require("gears")
 local beautiful = require("beautiful")
 local vicious = require("vicious")
 local vhelpers = require("vicious.helpers")
+local rootmod = (...):match("(.-)[^%.]+$")
+local stackchart = require(rootmod .. "stackchart")
 
 local memwatermark = { mt = {} }
 
@@ -40,20 +42,10 @@ function memwatermark.new(args)
     local mem_widget = wibox.widget {
         {
             {
-                max_value = 1,
-                value = 0,
-                paddings = 0,
                 border_width  = 0,
-                color = theme.memwatermark_graph_color or args.graph_color or {
-                    type = "linear",
-                    from = {0, 0},
-                    to = {50, 0},
-                    stops = {{0, "#fabd2f"},
-                    {0.3, "#af3a03"},
-                    {1, "#af3a03"}}
-                },
+                colors = {"#fabd2f", "#af6703", "#af3a03"},
                 background_color = theme.memwatermark_bg_color or args.bg_color or "#494b4f",
-                widget = wibox.widget.progressbar,
+                widget = stackchart
             },
             forced_height = actual_px(theme.memwatermark_height or args.width or 26),
             forced_width = actual_px(theme.memwatermark_width or args.width or 40),
@@ -74,7 +66,8 @@ function memwatermark.new(args)
                     function (_, args)
                         local bar = mem_widget.children[1].children[1]
                         local label = _mem_widget_text
-                        bar:set_value(args[1] / 100.0)
+                        -- bar:set_value(args[1] / 100.0)
+                        bar:add_value({args[2], args[9] - args[2], args[4]})
                         label.markup = args[1] .. "%"
                     end, 5)
     return mem_widget
