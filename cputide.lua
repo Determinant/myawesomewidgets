@@ -68,6 +68,7 @@ function cputide.new(args)
         background_color = "#00000000",
         color = theme.cputide_power_color or args.cpu_low_color or "#75fb98",
         max_value = 50,
+        min_value = 20,
         line_width = 1,
         widget = linegraph
     }

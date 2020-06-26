@@ -38,10 +38,13 @@ function graph:draw(_, cr, width, height)
     if self._private.color ~= nil then
         cr:set_source(color(self._private.color))
     end
+    local function cutoff(v)
+        return math.max(0, v - min_value)
+    end
     cr:set_line_width(self._private.line_width or 2)
-    cr:move_to(0, height - values[1] * yscale)
+    cr:move_to(0, height - cutoff(values[1]) * yscale)
     for i = 1, #values do
-        cr:line_to((i - 1) * xscale, height - values[i] * yscale)
+        cr:line_to((i - 1) * xscale, height - cutoff(values[i]) * yscale)
     end
     cr:stroke()
 end
