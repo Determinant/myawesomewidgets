@@ -67,7 +67,10 @@ function memwatermark.new(args)
                         local bar = mem_widget.children[1].children[1]
                         local label = _mem_widget_text
                         -- bar:set_value(args[1] / 100.0)
-                        bar:add_value({args[2], args[9] - args[2], args[4]})
+                        local total = args[3]
+                        local used = args[2]
+                        local cb = args[9] - args[2]
+                        bar:add_value({ used, cb, total - used - cb })
                         label.markup = args[1] .. "%"
                     end, 5)
     return mem_widget
