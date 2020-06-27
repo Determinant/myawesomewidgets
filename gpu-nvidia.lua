@@ -5,26 +5,20 @@
 ---------------------------------------------------
 
 -- {{{ Grab environment
-local ipairs = ipairs
 local io = { popen = io.popen }
 local setmetatable = setmetatable
-local math = { floor = math.floor }
-local table = { insert = table.insert }
 local string = {
-    sub = string.sub,
     match = string.match
 }
 -- }}}
 
 
--- gpu-nvidia: provides GPU usage for all available GPUs/cores
--- Initialize function tables
+-- gpu-nvidia: provides NVIDIA GPU information
 local gpu_nvidia = {}
 local gpu_usage  = {}
 
 -- {{{ GPU widget type
 local function worker(format)
-    -- Get GPU stats
     local f = io.popen("nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,power.draw,power.limit,clocks.sm --format=csv")
     for line in f:lines() do
         util, temp, watt_draw, watt_limit, sm_freq =

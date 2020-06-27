@@ -28,6 +28,9 @@ function gputide.new(args)
     local theme = beautiful.get()
     local gpu_icon = args.gpu_icon or gen_gpu_icon(theme)
     local show_icon = (args.show_icon == nil and true) or args.show_icon
+    local height = actual_px(theme.gputide_height or args.height or 26)
+    local width = actual_px(theme.gputide_width or args.width or 50)
+
 
     local _gpu_widget_text = wibox.widget {
         text = 'n/a',
@@ -40,23 +43,22 @@ function gputide.new(args)
         _gpu_widget_text
     }
 
-    local gpu_power = wibox.widget {
+    local gpu_curves = wibox.widget {
+        width = width,
+        height = height,
         background_color = "#00000000",
-        color = theme.gputide_power_color or args.gpu_low_color or "#82a6fa",
-        widget = linegraph
-    }
-
-    local gpu_freq = wibox.widget {
-        background_color = "#00000000",
-        color = theme.gputide_power_color or args.gpu_low_color or "#4b975f",
-        line_width = 1,
+        colors = {
+            theme.gputide_power_color or "#82a6fa",
+            theme.gputide_freq_color or "#4b975f",
+        },
+        line_widths = { 2, 1 },
         widget = linegraph
     }
 
     local gpu_widget = wibox.widget {
         {
-            height = actual_px(theme.gputide_height or args.height or 26),
-            width = actual_px(theme.gputide_width or args.width or 50),
+            width = width,
+            height = height,
             background_color = theme.gputide_bg_color or args.bg_color or "#494b4f",
             base_color = theme.gputide_low_color or args.low_color or "#fabd2f",
             blend_color = theme.gputide_high_color or args.high_color or "#ff0000",
@@ -64,13 +66,7 @@ function gputide.new(args)
         },
         {
             nil,
-            gpu_power,
-            expand = 'outside',
-            layout = wibox.layout.align.horizontal
-        },
-        {
-            nil,
-            gpu_freq,
+            gpu_curves,
             expand = 'outside',
             layout = wibox.layout.align.horizontal
         },
@@ -83,16 +79,10 @@ function gputide.new(args)
         layout = wibox.layout.stack
     }
 
-    vicious.register(_gpu_widget_text,
-                    gpu_nvidia,
-                    "$2°C",
-                    5)
-    vicious.register(gpu_widget.children[1], gpu_nvidia, "$1")
-    vicious.register(gpu_power, gpu_nvidia, function(w, args)
-        return args[3] / args[4] * 100
-    end)
-    vicious.register(gpu_freq, gpu_nvidia, function(w, args)
-        return args[5] / 2000 * 100
+    vicious.register(gpu_widget, gpu_nvidia, function(_, args)
+        gpu_widget.children[1]:add_value(args[1] / 100)
+        _gpu_widget_text:set_text(string.format("%.0f°C", args[2]))
+        gpu_curves:add_value({args[3] / args[4], args[5] / 2000})
     end)
 
     return gpu_widget

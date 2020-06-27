@@ -52,6 +52,8 @@ function cputide.new(args)
     local theme = beautiful.get()
     local cpu_icon = args.cpu_icon or gen_cpu_icon(theme)
     local show_icon = (args.show_icon == nil and true) or args.show_icon
+    local height = actual_px(theme.cputide_height or args.height or 26)
+    local width = actual_px(theme.cputide_width or args.width or 50)
 
     local _cpu_widget_text = wibox.widget {
         text = 'n/a',
@@ -65,6 +67,8 @@ function cputide.new(args)
     }
 
     local cpu_freq = wibox.widget {
+        height = height,
+        width = width,
         background_color = "#00000000",
         color = theme.cputide_power_color or args.cpu_low_color or "#4b975f",
         max_value = 50,
@@ -75,8 +79,8 @@ function cputide.new(args)
 
     local cpu_widget = wibox.widget {
         {
-            height = actual_px(theme.cputide_height or args.height or 26),
-            width = actual_px(theme.cputide_width or args.width or 50),
+            height = height,
+            width = width,
             background_color = theme.cputide_bg_color or args.bg_color or "#494b4f",
             base_color = theme.cputide_low_color or args.low_color or "#fabd2f",
             blend_color = theme.cputide_high_color or args.high_color or "#ff0000",

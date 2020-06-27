@@ -10,13 +10,24 @@ local naughty = require("naughty")
 local graph = { mt = {} }
 
 local properties = { "width", "height",
-                     "color", "background_color",
-                     "max_value", "min_value", "max_records", "line_width" }
+                     "colors", "color", "background_color",
+                     "max_value", "min_value", "max_records",
+                     "line_width", "line_widths" }
 
 function graph:add_value(value, group)
-    table.insert(self._private.values, 1, value)
-    if #self._private.values > self._private.max_records then
-        table.remove(self._private.values, #self._private.values)
+    if type(value) == "number" then
+        value = {value}
+    end
+    for i = 1, #value do
+        local values = self._private.values[i]
+        if values == nil then
+            values = {}
+            self._private.values[i] = values
+        end
+        table.insert(values, 1, value[i])
+        if #values > self._private.max_records then
+            table.remove(values, #values)
+        end
     end
     self:emit_signal("widget::redraw_needed")
     return self
@@ -27,26 +38,29 @@ function graph:fit(_, width, height)
 end
 
 function graph:draw(_, cr, width, height)
-    local values = self._private.values
-    if #values == 0 then return end
+    for i = 1, #self._private.values do
+        local values = self._private.values[i]
+        if #values == 0 then return end
 
-    local max_value = self._private.max_value
-    local min_value = self._private.min_value or 0
-    local xscale = width / self._private.max_records
-    local yscale = height / (max_value - min_value)
-
-    if self._private.color ~= nil then
-        cr:set_source(color(self._private.color))
+        local max_value = self._private.max_value
+        local min_value = self._private.min_value or 0
+        local xscale = width / self._private.max_records
+        local yscale = height / (max_value - min_value)
+        local c = self._private.colors[i] or self._private.color
+        if c ~= nil then
+            cr:set_source(color(c))
+        end
+        local function gety(v)
+            return height - math.max(0, v - min_value) * yscale
+        end
+        cr:set_line_width(
+            self._private.line_widths[i] or self._private.line_width or 1)
+        cr:move_to(0, gety(values[1]))
+        for i = 1, #values do
+            cr:line_to((i - 1) * xscale, gety(values[i]))
+        end
+        cr:stroke()
     end
-    local function cutoff(v)
-        return math.max(0, v - min_value)
-    end
-    cr:set_line_width(self._private.line_width or 2)
-    cr:move_to(0, height - cutoff(values[1]) * yscale)
-    for i = 1, #values do
-        cr:line_to((i - 1) * xscale, height - cutoff(values[i]) * yscale)
-    end
-    cr:stroke()
 end
 
 --- Clear the graph.
@@ -106,6 +120,8 @@ function graph.new(args)
     _graph._private.width     = width
     _graph._private.height    = height
     _graph._private.values    = {}
+    _graph._private.colors    = {}
+    _graph._private.line_widths    = {}
     _graph._private.max_value = 1
     _graph._private.max_records = width
 
