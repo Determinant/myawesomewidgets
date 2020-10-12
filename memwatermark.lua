@@ -43,7 +43,7 @@ function memwatermark.new(args)
         {
             {
                 border_width  = 0,
-                colors = {"#fabd2f", "#af6703", "#af3a03"},
+                colors = {"#af3a03", "#af6703", "#fabd2f"},
                 background_color = theme.memwatermark_bg_color or args.bg_color or "#494b4f",
                 widget = stackchart
             },
