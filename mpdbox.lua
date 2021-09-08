@@ -50,7 +50,7 @@ function mpdbox.new(args)
     local show_music_icon = (args.show_music_icon == nil and true) or args.show_music_icon
     local mpc_conn
     local mpdbox_progress = wibox.widget {
-        width = actual_px(theme.mpdbox_width or args.width or 100),
+        forced_width = actual_px(theme.mpdbox_width or args.width or 100),
         max_value = 1,
         value = 0,
         paddings = { top = actual_px(3), bottom = actual_px(3) },
